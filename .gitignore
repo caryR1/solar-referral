@@ -1,0 +1,8 @@
+# Credentials — never commit
+.secrets/
+
+# Build artifacts — regenerate from wp-plugin/gemz-solar-referral/ source instead
+wp-plugin/*.zip
+
+# Scratch/debug output from local testing
+*.log
