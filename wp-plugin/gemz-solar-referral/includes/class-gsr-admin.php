@@ -118,7 +118,7 @@ class GSR_Admin {
 			echo '<tr>';
 			echo '<td>' . esc_html( $r->sub_affiliate_name ) . '</td>';
 			echo '<td>' . esc_html( $email ) . '</td>';
-			echo '<td>' . esc_html( $r->partner_name ) . '</td>';
+			echo '<td>' . esc_html( $r->partner_name ?: '(unassigned)' ) . '</td>';
 			echo '<td><code>' . esc_html( $r->code ) . '</code></td>';
 			echo '<td>' . $cut . '</td>';
 			echo '<td>' . esc_html( $r->status ) . '</td>';
@@ -797,7 +797,7 @@ class GSR_Admin {
 				echo '<tr>';
 				echo '<td>' . esc_html( $r->entered_at ) . '</td>';
 				echo '<td><code>' . esc_html( $r->code ) . '</code></td>';
-				echo '<td>' . esc_html( $r->partner_name ) . '</td>';
+				echo '<td>' . esc_html( $r->partner_name ?: '(unassigned)' ) . '</td>';
 				echo '<td>$' . esc_html( number_format( (float) $r->sale_amount, 2 ) ) . '</td>';
 				echo '<td>' . esc_html( $r->installment_label ?: '&mdash;' ) . '</td>';
 				echo '<td>$' . esc_html( number_format( (float) $r->gross_commission, 2 ) ) . '</td>';

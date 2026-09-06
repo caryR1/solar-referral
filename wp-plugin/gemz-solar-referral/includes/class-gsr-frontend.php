@@ -68,11 +68,6 @@ class GSR_Frontend {
 		return $id ? get_permalink( $id ) : home_url( '/become-an-affiliate/' );
 	}
 
-	private static function get_active_partners() {
-		global $wpdb;
-		return $wpdb->get_results( 'SELECT id, name FROM ' . GSR_DB::table( 'partners' ) . ' ORDER BY name ASC' );
-	}
-
 	private static function generate_unique_code( $name ) {
 		global $wpdb;
 		$table = GSR_DB::table( 'codes' );
@@ -110,7 +105,6 @@ class GSR_Frontend {
 			echo '<div class="gsr-notice gsr-notice-error"><p>' . esc_html( $error ) . '</p></div>';
 		}
 
-		$partners = self::get_active_partners();
 		?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="gsr-form">
 			<?php wp_nonce_field( 'gsr_affiliate_signup' ); ?>
@@ -126,15 +120,6 @@ class GSR_Frontend {
 			<p>
 				<label for="gsr_email">Email</label><br>
 				<input type="email" id="gsr_email" name="email" required class="gsr-input">
-			</p>
-			<p>
-				<label for="gsr_partner">Which solar partner do you want to promote?</label><br>
-				<select id="gsr_partner" name="partner_id" required class="gsr-input">
-					<option value="">-- choose one --</option>
-					<?php foreach ( $partners as $p ) : ?>
-						<option value="<?php echo esc_attr( $p->id ); ?>"><?php echo esc_html( $p->name ); ?></option>
-					<?php endforeach; ?>
-				</select>
 			</p>
 			<p>
 				<label for="gsr_password">Choose a password</label><br>
@@ -168,7 +153,6 @@ class GSR_Frontend {
 
 		$name       = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
 		$email      = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-		$partner_id = isset( $_POST['partner_id'] ) ? absint( $_POST['partner_id'] ) : 0;
 		$password   = isset( $_POST['password'] ) ? (string) $_POST['password'] : '';
 		$password2  = isset( $_POST['password2'] ) ? (string) $_POST['password2'] : '';
 
@@ -177,7 +161,7 @@ class GSR_Frontend {
 			exit;
 		};
 
-		if ( '' === $name || ! is_email( $email ) || ! $partner_id || strlen( $password ) < 8 ) {
+		if ( '' === $name || ! is_email( $email ) || strlen( $password ) < 8 ) {
 			$fail( 'Please fill in every field. Passwords need to be at least 8 characters.' );
 		}
 		if ( $password !== $password2 ) {
@@ -207,23 +191,18 @@ class GSR_Frontend {
 		$code = self::generate_unique_code( $name );
 
 		global $wpdb;
-		$partners_table = GSR_DB::table( 'partners' );
-		$partner        = $wpdb->get_row( $wpdb->prepare( "SELECT default_cut_type, default_cut_value FROM {$partners_table} WHERE id = %d", $partner_id ) );
-		$cut_type       = $partner && 'flat' === $partner->default_cut_type ? 'flat' : 'percent';
-		$cut_value      = $partner ? (float) $partner->default_cut_value : 0;
-
 		$wpdb->insert(
 			GSR_DB::table( 'codes' ),
 			array(
 				'code'               => $code,
 				'sub_affiliate_name' => $name,
-				'partner_id'         => $partner_id,
+				'partner_id'         => 0,
 				'wp_user_id'         => $user_id,
 				'status'             => 'active',
-				'cut_type'           => $cut_type,
-				'cut_value'          => $cut_value,
+				'cut_type'           => 'percent',
+				'cut_value'          => 0,
 				'active'             => 1,
-				'notes'              => 'Self-signup, live immediately at the partner\'s default cut rate.',
+				'notes'              => 'Self-signup, live immediately. No partner assigned yet — match to a partner and set the cut rate from Solar Referral > Codes.',
 				'created_at'         => current_time( 'mysql' ),
 			)
 		);
@@ -236,7 +215,7 @@ class GSR_Frontend {
 		wp_mail(
 			get_option( 'admin_email' ),
 			'New affiliate joined: ' . $name,
-			"A new affiliate signed up and is live immediately.\n\nName: {$name}\nEmail: {$email}\nCode: {$code}\nCut rate applied: " . ( 'flat' === $cut_type ? '$' . number_format( $cut_value, 2 ) . ' flat' : $cut_value . '%' ) . "\n\nYou can suspend them or adjust their rate anytime in wp-admin under Solar Referral > Affiliates."
+			"A new affiliate signed up and is live immediately, but has no partner assigned yet.\n\nName: {$name}\nEmail: {$email}\nCode: {$code}\n\nMatch them to a partner and set their cut rate in wp-admin under Solar Referral > Codes."
 		);
 
 		wp_safe_redirect( add_query_arg( 'gsr_signup', 'success', self::signup_url() ) );
