@@ -32,7 +32,7 @@ Working title: "Solar by GemzOnline: Who We Are and What We Do" (Cary leaning th
 Want to become an affiliate and get paid for referring solar? Here's exactly how it works:
 
 - You earn **$200–$700 per completed solar installation** you refer, depending on the system.
-- Payout happens within **30 days of Permission to Operate (PTO)** — the point where the utility inspects and officially switches the system on. This varies by installation partner and location (permitting speed and utility inspection timelines differ), so realistically, expect **10 weeks to 4 months** from referral to payout.
+- Payout happens within **30 days of Permission to Operate (PTO)** — the point where the utility inspects and officially switches the system on. This varies by installation partner and location (permitting speed and utility inspection timelines differ), so realistically, expect **6 weeks to 4 months** from referral to payout.
 - You're not left guessing along the way: you get email updates at each milestone (deal approved, installation complete, PTO granted, funds issued), plus portal access to check status anytime. And since you're referring someone you know, you can always just ask them directly how things are going.
 
 [Referral link here]
